@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "name": "Kindle Article to EPUB",
+  "version": "1.0",
+  "description": "Extrae el contenido principal de un artículo y lo convierte a EPUB para Kindle.",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "*://*/*"
+  ],
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "32": "icon32.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "32": "icon32.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["readability.js", "JSZip.js", "content_script.js"]
+    }
+  ]
+} 
