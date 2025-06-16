@@ -6,7 +6,10 @@
   "permissions": [
     "activeTab",
     "storage",
-    "*://*/*"
+    "*://*/*",
+    "downloads",
+    "tabs",
+    "identity"
   ],
   "browser_action": {
     "default_popup": "popup.html",
@@ -24,12 +27,26 @@
     "128": "icon128.png"
   },
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js"],
+    "persistent": true
   },
   "content_scripts": [
     {
       "matches": ["*://*/*"],
-      "js": ["readability.js", "JSZip.js", "content_script.js"]
+      "js": ["readability.js", "JSZip.js", "content_script.js"],
+      "run_at": "document_end",
+      "all_frames": false
     }
-  ]
+  ],
+  "web_accessible_resources": [
+    "readability.js",
+    "JSZip.js"
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "oauth2": {
+    "client_id": "TU_CLIENT_ID.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/gmail.send"
+    ]
+  }
 } 
