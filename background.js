@@ -5,7 +5,6 @@ console.log('Background script iniciado');
 
 // Escuchar mensajes del popup
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('Background script recibió mensaje:', message);
   return true;
 });
 

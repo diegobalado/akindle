@@ -1,29 +1,14 @@
 // Esperar a que el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('Popup script iniciado');
-  
   // Elementos del DOM
   const convertBtn = document.getElementById('convert-btn');
   const statusDiv = document.getElementById('status');
   const kindleEmailInput = document.getElementById('kindle-email');
 
-  if (!convertBtn) {
-    console.error('No se encontró el botón de convertir');
+  if (!convertBtn || !statusDiv || !kindleEmailInput) {
+    console.error('Error: No se encontraron elementos necesarios del DOM');
     return;
   }
-  console.log('Botón de convertir encontrado');
-
-  if (!statusDiv) {
-    console.error('No se encontró el div de estado');
-    return;
-  }
-  console.log('Div de estado encontrado');
-
-  if (!kindleEmailInput) {
-    console.error('No se encontró el input de email');
-    return;
-  }
-  console.log('Input de email encontrado');
 
   // Cargar email guardado
   browser.storage.local.get('kindleEmail').then(result => {
@@ -42,8 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Convertir a EPUB
   convertBtn.addEventListener('click', async () => {
-    console.log('Botón de convertir clickeado');
-    
     // Validar email
     const email = kindleEmailInput.value.trim();
     if (!email) {
@@ -60,25 +43,20 @@ document.addEventListener('DOMContentLoaded', () => {
     
     try {
       // Obtener la pestaña activa
-      console.log('Consultando pestaña activa...');
       const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-      console.log('Pestañas encontradas:', tabs);
       
       if (!tabs || tabs.length === 0) {
         throw new Error('No se encontró ninguna pestaña activa');
       }
       
       const tab = tabs[0];
-      console.log('Pestaña activa:', tab.id, tab.url);
       
       // Enviar mensaje al content script
-      console.log('Enviando mensaje al content script...');
       browser.tabs.sendMessage(tab.id, { 
         action: 'extract_and_convert',
         kindleEmail: email
       })
         .then(response => {
-          console.log('Respuesta recibida:', response);
           if (response && response.success) {
             statusDiv.innerHTML = `
               ¡EPUB generado!<br>

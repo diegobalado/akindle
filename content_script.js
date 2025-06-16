@@ -17,7 +17,6 @@ if (typeof Readability === 'undefined') {
 }
 
 function downloadEPUB(blob, filename) {
-  console.log('Iniciando descarga de:', filename);
   try {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -42,14 +41,12 @@ function downloadEPUB(blob, filename) {
     
     // Iniciar descarga
     a.click();
-    console.log('Descarga iniciada');
     
     // Limpiar después de 3 segundos
     setTimeout(() => {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       document.body.removeChild(notification);
-      console.log('Limpieza completada');
     }, 3000);
   } catch (error) {
     console.error('Error en downloadEPUB:', error);
@@ -58,14 +55,12 @@ function downloadEPUB(blob, filename) {
 }
 
 async function generateEPUB(article) {
-  console.log('Generando EPUB para:', article.title);
   try {
     if (!window.JSZip) {
       throw new Error('JSZip no está disponible');
     }
     
     const zip = new JSZip();
-    console.log('JSZip inicializado');
     
     // Archivos mínimos para EPUB
     zip.file('mimetype', 'application/epub+zip');
@@ -123,9 +118,7 @@ async function generateEPUB(article) {
       '</body>' +
       '</html>');
 
-    console.log('Generando blob del EPUB');
     const blob = await zip.generateAsync({ type: 'blob', mimeType: 'application/epub+zip' });
-    console.log('Blob generado, iniciando descarga');
     await downloadEPUB(blob, article.title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.epub');
   } catch (error) {
     console.error('Error en generateEPUB:', error);
@@ -135,23 +128,17 @@ async function generateEPUB(article) {
 
 // Escuchar mensajes del popup
 browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  console.log('Mensaje recibido:', msg);
   if (msg.action === 'extract_and_convert') {
     try {
-      console.log('Intentando extraer artículo');
-      
       // Verificar que Readability esté disponible
       if (typeof Readability === 'undefined') {
         throw new Error('Readability no está disponible. Por favor, recarga la página e intenta de nuevo.');
       }
       
       const article = new Readability(document.cloneNode(true)).parse();
-      console.log('Artículo extraído:', article ? 'Sí' : 'No');
       
       if (article && article.content) {
-        console.log('Artículo extraído exitosamente');
         generateEPUB(article).then(() => {
-          console.log('EPUB generado y descargado');
           sendResponse({ success: true });
         }).catch(error => {
           console.error('Error al generar EPUB:', error);
